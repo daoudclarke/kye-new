@@ -163,19 +163,20 @@ class KyeGhost(Thinker):
             game.remove_at(x, y)
         return True
 
+
 class Block(Thinker):
     """Square or round moveable block. Also turning blocks and timer blocks."""
 
     def __init__(self, t, round, timer=0):
         """3 parameters:
-        
+
         t -- normally 0. -1 for an anticlockwise turner, 1 for a clockwise turner.
         round -- true if this is a round block, false otherwise.
         timer -- normally omitted, but if positive then it makes a timer block with the number indicating how long until it expires.
         """
         Thinker.__init__(self)
         self.timer = 0
-        if timer: self.timer = timer*30 + 25
+        if timer: self.timer = timer * 30 + 25
         self.round = round
         self.__turn = t
 
@@ -188,7 +189,7 @@ class Block(Thinker):
         return self.__turn
 
     def image(self, af):
-        if self.timer > 0: return "block_timer_"+str(self.timer//30)
+        if self.timer > 0: return "block_timer_" + str(self.timer // 30)
         if self.round: return "blockr"
         if self.__turn == -1: return "turner_anticlockwise"
         if self.__turn == 1: return "turner_clockwise"
@@ -200,10 +201,40 @@ class Block(Thinker):
             self.timer = self.timer - 1
             if self.timer == 0:
                 game.remove_at(x, y)
-        if game.magnet_count[30*y + x] > 0:
+        if game.magnet_count[30 * y + x] > 0:
             self.pulltomagnet(game, x, y)
         if self.timer == 0: return False
         return (self.timer % 30) == 29
+
+
+class Deletathon(Thinker):
+    """Square or round moveable block. Also turning blocks and timer blocks."""
+
+    def __init__(self, idx, idy):
+        """3 parameters:
+
+        t -- normally 0. -1 for an anticlockwise turner, 1 for a clockwise turner.
+        round -- true if this is a round block, false otherwise.
+        timer -- normally omitted, but if positive then it makes a timer block with the number indicating how long until it expires.
+        """
+        Thinker.__init__(self)
+        self.idx = idx
+        self.idy = idy
+
+    def roundness(self):
+        return 0
+
+    def turn(self):
+        """Returns -1 or 1 if sliders/rounders hitting this block should be turned left or right; 0 for an ordinary block."""
+        return True
+
+    def image(self, af):
+        return "deletathon_1"
+
+    def think(self, game, x, y):
+        """Count down timer blocks and flag the caller when the image changes."""
+        pass
+
 
 class Sentry(Thinker):
     """This represents a sentry, or 'bouncer' as the original Kye termed them."""

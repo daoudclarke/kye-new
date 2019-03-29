@@ -73,7 +73,10 @@ class KGame:
         'f' : (OneWay, 1, 0),
         'g' : (OneWay,-1, 0),
         'A' : (Shooter,False),
-        'F' : (Shooter,True),
+        '(' : (Deletathon,-1, 0),
+        ')' : (Deletathon,1, 0),
+        '+' : (Deletathon,0, -1),
+        '-' : (Deletathon,0, 1),
         }
 
     def __init__(self, f, want_level, movesource, rng):

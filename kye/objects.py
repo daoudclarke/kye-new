@@ -218,23 +218,46 @@ class Deletathon(Thinker):
         timer -- normally omitted, but if positive then it makes a timer block with the number indicating how long until it expires.
         """
         Thinker.__init__(self)
-        self.idx = idx
-        self.idy = idy
+        self.dx = idx
+        self.dy = idy
 
-    def roundness(self):
-        return 0
+    # def roundness(self):
+    #     return 0
 
-    def turn(self):
-        """Returns -1 or 1 if sliders/rounders hitting this block should be turned left or right; 0 for an ordinary block."""
-        return True
+    # def turn(self):
+    #     """Returns -1 or 1 if sliders/rounders hitting this block should be turned left or right; 0 for an ordinary block."""
+    #     return True
 
     def image(self, af):
         return "deletathon_1"
 
-    def think(self, game, x, y):
-        """Count down timer blocks and flag the caller when the image changes."""
-        pass
+    # def think(self, game, x, y):
+    #     """Count down timer blocks and flag the caller when the image changes."""
+    #     pass
 
+    def freq(self): return 5
+
+    def act(self, game, x, y):
+        # Look at what we are walking into
+        dx, dy = self.dx, self.dy
+        t = game.get_atB(x + dx, y + dy)
+
+        # If it's a blackhole, we are destroyed in it if it is ready to eat.
+        if isinstance(t, BlackHole):
+            if t.swallow(game):
+                game.remove_at(x, y)
+                return
+            # else drop through - we can push a full blackhole.
+
+        # If there is nothing ahead, move ahead
+        if t == None:
+            game.move_object(x, y, x+dx, y+dy)
+            return False
+        else:
+            # else we push the object ahead and turn around.
+            game.push_object(x+dx, y+dy, dx, dy)
+            self.dx, self.dy = -dx, -dy
+            return True
 
 class Sentry(Thinker):
     """This represents a sentry, or 'bouncer' as the original Kye termed them."""

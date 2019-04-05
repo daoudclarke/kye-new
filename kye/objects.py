@@ -208,56 +208,92 @@ class Block(Thinker):
 
 
 class Deletathon(Thinker):
-    """Square or round moveable block. Also turning blocks and timer blocks."""
+    """Represents a square or round slider."""
 
     def __init__(self, idx, idy):
-        """3 parameters:
-
-        t -- normally 0. -1 for an anticlockwise turner, 1 for a clockwise turner.
-        round -- true if this is a round block, false otherwise.
-        timer -- normally omitted, but if positive then it makes a timer block with the number indicating how long until it expires.
-        """
         Thinker.__init__(self)
         self.dx = idx
         self.dy = idy
+        self.round = 1
 
-    # def roundness(self):
-    #     return 0
+    def roundness(self):
+        if self.round: return 5
+        return 0
 
-    # def turn(self):
-    #     """Returns -1 or 1 if sliders/rounders hitting this block should be turned left or right; 0 for an ordinary block."""
-    #     return True
+    def act(self, game, x, y):
+        dx,dy = self.dx,self.dy
+
+        # Try moving forward. Move into space, fall into black holes.
+        t = game.get_atB(x+dx, y+dy)
+        if t == None:
+            game.move_object(x, y, x+dx, y+dy)
+        elif isinstance(t, BlackHole):
+            if t.swallow(game):
+                game.remove_at(x, y)
+        else:
+            # Obstacle - if a block, check to see if we should turn.
+            if isinstance(t, Block):
+                tn = t.turn()
+                if tn != 0:
+                    self.dx = -(tn*dy)
+                    self.dy = tn*dx
+                    return True
+
+            # Round sliders can roll round rounded obstacles.
+            if self.round:
+                tr = t.roundness()
+                if tr == 0: return False
+
+                # Rocky hitting a rounded surface - which ways can it deflect
+                plus,minus = False,False
+                if dx != 0:
+                    if tr % 3 == 2 or (tr+dx) % 3 == 2:
+                        minus = tr > 3
+                        plus = tr < 7
+                else: # dy != 0
+                    if tr < 4 or tr > 6:
+                        tr -= 3*dy
+                    if   tr == 4: plus,minus = False,True
+                    elif tr == 5: plus,minus = True,True
+                    elif tr == 6: plus,minus = True,False
+
+                # Obstacle is not rounded on either corner facing us - we are stuck
+                if not plus and not minus: return False
+
+                if dx != 0:
+                    if plus and (game.get_atB(x,y+1) != None or game.get_atB(x+dx,y+1) != None): plus = False
+                    if minus and (game.get_atB(x,y-1) != None or game.get_atB(x+dx,y-1) != None): minus = False
+                else: # dy != 0
+                    if plus and (game.get_atB(x+1,y) != None or game.get_atB(x+1,y+dy) != None): plus = False
+                    if minus and (game.get_atB(x-1,y) != None or game.get_atB(x-1,y+dy) != None): minus = False
+
+                # No way forward due to target square(s) being occupied - stuck
+                if not plus and not minus: return False
+
+                # If both ways forwand are possible, choose randomely
+                if plus and minus:
+                    if game.nextrand(2) == 0:
+                        plus = False
+                    else:
+                        minus = False
+
+                # Work out which square that corresponds to
+                tdx, tdy = dx,dy
+                if plus:
+                    if tdx != 0: tdy = dy+1
+                    else: tdx = dx+1
+                else:
+                    if tdx != 0: tdy = dy-1
+                    else: tdx = dx-1
+
+                # And move into it.
+                game.move_object(x, y, x+tdx, y+tdy)
+
+        return False
 
     def image(self, af):
         return "deletathon_1"
 
-    # def think(self, game, x, y):
-    #     """Count down timer blocks and flag the caller when the image changes."""
-    #     pass
-
-    def freq(self): return 5
-
-    def act(self, game, x, y):
-        # Look at what we are walking into
-        dx, dy = self.dx, self.dy
-        t = game.get_atB(x + dx, y + dy)
-
-        # If it's a blackhole, we are destroyed in it if it is ready to eat.
-        if isinstance(t, BlackHole):
-            if t.swallow(game):
-                game.remove_at(x, y)
-                return
-            # else drop through - we can push a full blackhole.
-
-        # If there is nothing ahead, move ahead
-        if t == None:
-            game.move_object(x, y, x+dx, y+dy)
-            return False
-        else:
-            # else we push the object ahead and turn around.
-            game.push_object(x+dx, y+dy, dx, dy)
-            self.dx, self.dy = -dx, -dy
-            return True
 
 class Sentry(Thinker):
     """This represents a sentry, or 'bouncer' as the original Kye termed them."""

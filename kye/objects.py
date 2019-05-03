@@ -232,62 +232,15 @@ class Deletathon(Thinker):
                 game.remove_at(x, y)
         else:
             # Obstacle - if a block, check to see if we should turn.
-            if isinstance(t, Block):
+            if isinstance(t, Block) and t.turn() != 0:
                 tn = t.turn()
                 if tn != 0:
                     self.dx = -(tn*dy)
                     self.dy = tn*dx
                     return True
+            elif not isinstance(t, Wall):
+                game.remove_at(x+dx, y+dy)
 
-            # Round sliders can roll round rounded obstacles.
-            if self.round:
-                tr = t.roundness()
-                if tr == 0: return False
-
-                # Rocky hitting a rounded surface - which ways can it deflect
-                plus,minus = False,False
-                if dx != 0:
-                    if tr % 3 == 2 or (tr+dx) % 3 == 2:
-                        minus = tr > 3
-                        plus = tr < 7
-                else: # dy != 0
-                    if tr < 4 or tr > 6:
-                        tr -= 3*dy
-                    if   tr == 4: plus,minus = False,True
-                    elif tr == 5: plus,minus = True,True
-                    elif tr == 6: plus,minus = True,False
-
-                # Obstacle is not rounded on either corner facing us - we are stuck
-                if not plus and not minus: return False
-
-                if dx != 0:
-                    if plus and (game.get_atB(x,y+1) != None or game.get_atB(x+dx,y+1) != None): plus = False
-                    if minus and (game.get_atB(x,y-1) != None or game.get_atB(x+dx,y-1) != None): minus = False
-                else: # dy != 0
-                    if plus and (game.get_atB(x+1,y) != None or game.get_atB(x+1,y+dy) != None): plus = False
-                    if minus and (game.get_atB(x-1,y) != None or game.get_atB(x-1,y+dy) != None): minus = False
-
-                # No way forward due to target square(s) being occupied - stuck
-                if not plus and not minus: return False
-
-                # If both ways forwand are possible, choose randomely
-                if plus and minus:
-                    if game.nextrand(2) == 0:
-                        plus = False
-                    else:
-                        minus = False
-
-                # Work out which square that corresponds to
-                tdx, tdy = dx,dy
-                if plus:
-                    if tdx != 0: tdy = dy+1
-                    else: tdx = dx+1
-                else:
-                    if tdx != 0: tdy = dy-1
-                    else: tdx = dx-1
-
-                # And move into it.
-                game.move_object(x, y, x+tdx, y+tdy)
 
         return False
 

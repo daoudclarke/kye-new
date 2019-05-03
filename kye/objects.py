@@ -245,7 +245,14 @@ class Deletathon(Thinker):
         return False
 
     def image(self, af):
-        return "deletathon_1"
+        if self.dx < 0:
+            return "deletathon_3"
+        if self.dx > 0:
+            return "deletathon_1"
+        if self.dy < 0:
+            return "deletathon_4"
+        if self.dy > 0:
+            return "deletathon_2"
 
 
 class Sentry(Thinker):

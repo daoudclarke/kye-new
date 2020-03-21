@@ -77,7 +77,7 @@ class KGame:
         ')' : (Deletathon,1, 0),
         '+' : (Deletathon,0, -1),
         '-' : (Deletathon,0, 1),
-        # '!' : (Deletathonshooter, False),
+        '!' : (DeletathonShooter,),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -144,7 +144,7 @@ class KGame:
                     self.add_at(x, y, cc)
 
                     # Objects where location matters
-                    if isinstance(cc, Shooter):
+                    if isinstance(cc, Shooter) or isinstance(cc, DeletathonShooter):
                         cc.setang(x%4)
                     if isinstance(cc, Kye):
                         self.kyestart = (x,y)

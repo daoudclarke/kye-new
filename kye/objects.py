@@ -255,6 +255,44 @@ class Deletathon(Thinker):
             return "deletathon_2"
 
 
+class DeletathonShooter(Thinker):
+    """Slider shooter."""
+    def __init__(self):
+        """One parameter, boolean - does this shoot round sliders (false -> square)."""
+        Thinker.__init__(self)
+        self.__waiting = 0
+
+    def setang(self, ang):
+        """Set the initial angle of this shooter."""
+        self.__dx = 0
+        self.__dy = 0
+
+        if   ang == 0: self.__dy =-1
+        elif ang == 1: self.__dx =-1
+        elif ang == 2: self.__dy = 1
+        elif ang == 3: self.__dx = 1
+
+    def image(self, af):
+        return "slider_shooter_" + direction(self.__dx, self.__dy)
+
+    def think(self, game, x, y):
+        dy = -self.__dx
+        dx = self.__dy
+
+        self.__dx = dx
+        self.__dy = dy
+        self.__waiting = self.__waiting+1
+
+        b = game.get_atB(x+dx, y+dy)
+        if self.__waiting > y and b == None:
+            game.add_at(x+dx, y+dy, Deletathon(dx, dy))
+            self.__waiting = 0
+        self.pulltomagnet(game, x, y)
+        return True
+
+    def freq(self): return 7
+
+
 class Sentry(Thinker):
     """This represents a sentry, or 'bouncer' as the original Kye termed them."""
     def __init__(self, idx, idy):

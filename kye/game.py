@@ -77,7 +77,8 @@ class KGame:
         ')' : (Deletathon,1, 0),
         '+' : (Deletathon,0, -1),
         '-' : (Deletathon,0, 1),
-        }
+        # '!' : (Deletathonshooter, False),
+    }
 
     def __init__(self, f, want_level, movesource, rng):
         levels = f.readline()

@@ -82,7 +82,11 @@ class KLevelEdit:
         'g' : ("oneway_left_1", 'i'),
         'A' : ("slider_shooter_up", 'F'),
         'F' : ("rocky_shooter_up", 'A'),
-        ' ' : ("blank", '')
+        ' ' : ("blank", ''),
+        '(' : ("deletathon_3", ")"),
+        ')' : ("deletathon_1", "+"),
+        '+' : ("deletathon_4", "-"),
+        '-' : ("deletathon_2", "("),
         }
 
     # Helper data for identifying walls and doing auto-rounding.

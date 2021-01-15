@@ -85,11 +85,12 @@ class Diamond(Edible):
     """Object representing a diamond."""
     r = Random()        # Used purely for animation.
     
-    def __init__(self):
+    def __init__(self, colour):
         Edible.__init__(self)
         self.state = Diamond.r.randint(1, 2)
+        self.colour = colour
 
-    def image(self, af): return "diamond_"+str(self.state)
+    def image(self, af): return "diamond_"+str(self.colour)+"_"+str(self.state)
 
     def freq(self): return 20
 

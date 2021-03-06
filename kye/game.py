@@ -83,6 +83,7 @@ class KGame:
         '+' : (Deletathon,0, -1),
         '-' : (Deletathon,0, 1),
         '!' : (DeletathonShooter,),
+        't': (Teleporter,),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -106,7 +107,7 @@ class KGame:
                 f.readline()
 
         if (levelname != want_level and want_level != ""):
-            raise KeyError, "level "+lev+" not found"
+            raise KeyError, "level "+levelname+" not found"
 
         self.thislev = levelname
         self.hint = f.readline().strip()
@@ -125,6 +126,7 @@ class KGame:
         self.thinkers = []
         self.diamonds = 0
         self.thekye = None
+        self.teleporters = set()
 
         for y in xrange(ysize):
             l = f.readline()
@@ -139,6 +141,9 @@ class KGame:
                     continue
                 try:
                     ctype = KGame.cell_lookup[c]
+
+                    if ctype[0] == Teleporter:
+                        self.teleporters.add((x, y))
 
                     # edge cells must be wall cells
                     if ctype[0] != Wall and edge:
@@ -344,6 +349,12 @@ class KGame:
         t = self.get_atB(x+dx, y+dy)
 
         # Special actions for certain targets.
+        if isinstance(t, Teleporter):
+            tx, ty = self.random.choice(list(self.teleporters - {(x+dx, y+dy)}))
+            dx = tx + dx - x
+            dy = ty + dy - y
+            t = None
+
         if isinstance(t, Edible):
             self.remove_at(x+dx, y+dy)
             t = None

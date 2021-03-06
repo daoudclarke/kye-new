@@ -652,3 +652,17 @@ class OneWay(Base):
 
     def think(self, g, x, y):
         return True
+
+class Teleporter(Base):
+    """Represents a one-way door."""
+    def __init__(self):
+        """Parameters to create a black hole: dx, dy, which define its allowed direction."""
+
+    def image(self, af):
+        return "teleporter_green_1"
+
+    def freq(self):
+        return 1
+
+    def think(self, g, x, y):
+        return True

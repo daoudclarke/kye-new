@@ -16,7 +16,9 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-"""kye.game - implements the Kye game state and behaviour."""
+"""kye.
+
+game - implements the Kye game state and behaviour."""
 
 from kye.objects import *
 from kye.common import xsize, ysize
@@ -83,7 +85,7 @@ class KGame:
         '+' : (Deletathon,0, -1),
         '-' : (Deletathon,0, 1),
         '!' : (DeletathonShooter,),
-        't': (Teleporter,),
+        't': (Teleporter, 'green'),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -196,7 +198,7 @@ class KGame:
         """Return the image to show for the tile at (i, j)."""
         c = self.get_at(i, j)
         if (c == None): return "blank"
-        return c.image(self.animate_frame)
+        return c.   image(self.animate_frame)
 
     def get_location(self, obj):
         """Return the location in the game of the given game object."""
@@ -348,12 +350,17 @@ class KGame:
         # Okay, get what is in the way of this move, if anything.
         t = self.get_atB(x+dx, y+dy)
 
+        new_under = None
+
         # Special actions for certain targets.
         if isinstance(t, Teleporter):
-            tx, ty = self.random.choice(list(self.teleporters - {(x+dx, y+dy)}))
-            dx = tx + dx - x
-            dy = ty + dy - y
+            tx, ty = self.random.choice(list(self.teleporters - {(x + dx, y + dy)}))
+            dx = tx - x
+            dy = ty - y
+            new_under = self.get_atB(x+dx, y+dy)
             t = None
+        else:
+            new_under = None
 
         if isinstance(t, Edible):
             self.remove_at(x+dx, y+dy)
@@ -367,7 +374,6 @@ class KGame:
             # the one case where two objects can occupy the same square; we
             # "hide" the one-way object in the Kye object, and replace it on
             # the board when the Kye next moves.
-            new_under = None
             if isinstance(t, OneWay) and t.allow_move(dx, dy):
                 # Remove the one-way and will store in the Kye.
                 self.remove_at(x+dx, y+dy)
@@ -385,6 +391,9 @@ class KGame:
                 if k.under != None:
                     self.add_at(x, y, k.under)
                 k.under = new_under
+
+                #if (x, y) in self.teleporters:
+                #    self.add_at(x, y, Teleporter())
 
     def find_kye(self):
         """Return the location of the Kye."""

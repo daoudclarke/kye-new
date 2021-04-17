@@ -86,6 +86,7 @@ class KGame:
         '-' : (Deletathon,0, 1),
         '!' : (DeletathonShooter,),
         't': (Teleporter, 'green'),
+        'q': (Teleporter, 'red'),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -359,8 +360,6 @@ class KGame:
             dy = ty - y
             new_under = self.get_atB(x+dx, y+dy)
             t = None
-        else:
-            new_under = None
 
         if isinstance(t, Edible):
             self.remove_at(x+dx, y+dy)

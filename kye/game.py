@@ -19,6 +19,7 @@
 """kye.
 
 game - implements the Kye game state and behaviour."""
+from collections import defaultdict
 
 from kye.objects import *
 from kye.common import xsize, ysize
@@ -129,7 +130,7 @@ class KGame:
         self.thinkers = []
         self.diamonds = 0
         self.thekye = None
-        self.teleporters = set()
+        self.teleporters = defaultdict(set)
 
         for y in xrange(ysize):
             l = f.readline()
@@ -146,7 +147,8 @@ class KGame:
                     ctype = KGame.cell_lookup[c]
 
                     if ctype[0] == Teleporter:
-                        self.teleporters.add((x, y))
+                        color = ctype[1]
+                        self.teleporters[color].add((x, y))
 
                     # edge cells must be wall cells
                     if ctype[0] != Wall and edge:
@@ -355,7 +357,7 @@ class KGame:
 
         # Special actions for certain targets.
         if isinstance(t, Teleporter):
-            tx, ty = self.random.choice(list(self.teleporters - {(x + dx, y + dy)}))
+            tx, ty = self.random.choice(list(self.teleporters[t.color] - {(x + dx, y + dy)}))
             dx = tx - x
             dy = ty - y
             new_under = self.get_atB(x+dx, y+dy)

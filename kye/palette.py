@@ -45,13 +45,13 @@ class KPalette(gtk.DrawingArea):
         palitems = {}
         already = {}
         for f, tool_data in palsource.iteritems():
-            x = tool_data[1]
-            if f not in already and x != '':
-                palitems[f] = 1
-                already[f] = 1
-                while x != f:
-                    already[x] = 1
-                    x = palsource[x][1]
+                x = tool_data[1]
+                if f not in already and x != '':
+                    palitems[f] = 1
+                    already[f] = 1
+                    while x != f:
+                        already[x] = 1
+                        x = palsource[x][1]
         
         # So make the initial palette from palitems.
         self.palitems = palitems.keys()

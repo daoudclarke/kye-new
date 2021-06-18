@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-#
+#   
 
 """kye.
 
@@ -88,6 +88,10 @@ class KGame:
         '!' : (DeletathonShooter,),
         't': (Teleporter, 'green'),
         'q': (Teleporter, 'red'),
+        'Z': (Teleporter, 'orange'),
+        'X': (Teleporter, 'blue'),
+        'V': (Teleporter, 'pink'),
+        'Q': (Teleporter, 'yellow'),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -458,6 +462,13 @@ class KGame:
             if tics % f == 0:
                 try:
                     x, y = self.get_location(t)
+
+
+
+
+
+
+
                 except KeyError, e: # Object was deleted during this tick
                     continue
 

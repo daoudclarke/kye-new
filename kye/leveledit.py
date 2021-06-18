@@ -91,8 +91,13 @@ class KLevelEdit:
         ')' : ("deletathon_1", "+"),
         '+' : ("deletathon_4", "-"),
         '-' : ("deletathon_2", "("),
-        't' : ("teleporter_green_1", 'q'),
-        'q' : ("teleporter_red_1", 't'),
+        't' : ("teleporter_green_1", 'Q'),
+        'q' : ("teleporter_red_1", 'V'),
+        'Q': ("teleporter_yellow_1", 'X'),
+        'V': ("teleporter_pink_1", 'Z'),
+        'X': ("teleporter_blue_1", 'q'),
+        'Z': ("teleporter_orange_1", 't'),
+
         }
 
     # Helper data for identifying walls and doing auto-rounding.

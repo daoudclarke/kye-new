@@ -260,6 +260,8 @@ class KGame:
         if isinstance(obj,Kye): self.kye = None
         if isinstance(obj,Diamond): self.diamonds = self.diamonds-1
         if isinstance(obj,Magnet): self.magnet_range(x,y,-1)
+        if isinstance(obj, Teleporter):
+            self.teleporters[obj.color].remove((x, y))
 
     def move_object(self, x, y, tx, ty):
         """Move the object at (x, y) to (tx, ty)."""
@@ -361,9 +363,10 @@ class KGame:
 
         # Special actions for certain targets.
         if isinstance(t, Teleporter):
-            tx, ty = self.random.choice(list(self.teleporters[t.color] - {(x + dx, y + dy)}))
-            dx = tx - x
-            dy = ty - y
+            if len(self.teleporters[t.color]) > 1:
+                tx, ty = self.random.choice(list(self.teleporters[t.color] - {(x + dx, y + dy)}))
+                dx = tx - x
+                dy = ty - y
             new_under = self.get_atB(x+dx, y+dy)
             t = None
 

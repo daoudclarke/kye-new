@@ -274,7 +274,7 @@ class DeletathonShooter(Thinker):
         elif ang == 3: self.__dx = 1
 
     def image(self, af):
-        return "slider_shooter_" + direction(self.__dx, self.__dy)
+        return "deletathon_shooter_" + direction(self.__dx, self.__dy)
 
     def think(self, game, x, y):
         dy = -self.__dx
@@ -426,7 +426,7 @@ def checkmagnet(game, x, y, dx, dy, state):
                 state[1:2] = x+dx, y+dy
     elif isinstance(a,Magnet):
         if (a.dx != 0 and dx != 0) or (a.dy != 0 and dy != 0):
-            state[0] = True;
+            state[0] = True
 
 class Magnet(Thinker):
     """Represents a magnet (sticky block, in the original Kye)."""

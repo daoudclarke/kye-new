@@ -145,7 +145,7 @@ class Thinker(Base):
             return state[0]
 
 class KyeGhost(Thinker):
-    """This is the ghost of a dead kye. It lasts just a few frames and them removes itself."""
+    """This is the ghost of a dead kye. It lasts just a few frames and then removes itself."""
     frames = ("kye", "kye_fading", "kye_faint")
 
     def __init__(self, k):
@@ -160,8 +160,11 @@ class KyeGhost(Thinker):
         self.frame = self.frame+1
         if self.frame > 2:
             if self.kye.lives >= 0:
-                game.respawn_kye(self.kye)
+                game.respawn_kye(self.kye, x, y)
             game.remove_at(x, y)
+            if self.kye.under is not None:
+                game.add_at(x, y, self.kye.under)
+                self.kye.under = None
         return True
 
 

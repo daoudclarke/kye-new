@@ -205,7 +205,7 @@ class KGame:
         """Return the image to show for the tile at (i, j)."""
         c = self.get_at(i, j)
         if (c == None): return "blank"
-        return c.   image(self.animate_frame)
+        return c.image(self.animate_frame)
 
     def get_location(self, obj):
         """Return the location in the game of the given game object."""
@@ -415,7 +415,7 @@ class KGame:
         self.remove_at(x, y)
         self.add_at(x, y, ghost)
 
-    def respawn_kye(self, k):
+    def respawn_kye(self, k, old_x, old_y):
         """When death animation ends, this is called to create the new Kye."""
         # deja vu here - G_CheckSpot clone
         # Find a spot to put the Kye - our original start square could be blocked.
@@ -465,13 +465,6 @@ class KGame:
             if tics % f == 0:
                 try:
                     x, y = self.get_location(t)
-
-
-
-
-
-
-
                 except KeyError, e: # Object was deleted during this tick
                     continue
 

@@ -367,8 +367,12 @@ class KGame:
                 tx, ty = self.random.choice(list(self.teleporters[t.color] - {(x + dx, y + dy)}))
                 dx = tx - x
                 dy = ty - y
-            new_under = self.get_atB(x+dx, y+dy)
-            t = None
+            if dx == 0 and dy == 0:
+                # We're teleporting to the same one we've come from!
+                pass
+            else:
+                new_under = self.get_atB(x+dx, y+dy)
+                t = None
 
         if isinstance(t, Edible):
             self.remove_at(x+dx, y+dy)

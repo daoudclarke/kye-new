@@ -98,7 +98,9 @@ class KLevelEdit:
         'V': ("teleporter_pink_1", 'Z'),
         'X': ("teleporter_blue_1", 'q'),
         'Z': ("teleporter_orange_1", 't'),
-
+        'M': ("switcher-unused", 'N'),
+        'N': ("switcher-used", 'P'),
+        'P': ("switcher-blocked", 'M'),
         }
 
     # Helper data for identifying walls and doing auto-rounding.

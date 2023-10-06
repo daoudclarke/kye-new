@@ -598,44 +598,6 @@ class Shooter(Thinker):
 
     def freq(self): return 7
 
-class BlackHole(Thinker):
-    """Represents a black hole."""
-    delayframes = 4
-
-    def __init__(self):
-        Thinker.__init__(self)
-        self.delay = 0
-        self.frame = 0
-
-    def freq(self):
-        return 5
-
-    def think(self, game, x, y):
-        self.frame = self.frame + 1
-        if self.frame == 4: self.frame = 0
-        if self.delay > 0: self.delay = self.delay - 1
-        return True
-
-    def swallow(self, g, animate = True):
-        """Called whenever something might fall in. Returns true if we swallow it, false if we cannot.
-        
-        Two parameters: the game object, and a bool (default true) which
-        indicates that the black hole should do its normal reaction cycle
-        (animate and be full (unable to eat) for a few cycles).
-        """
-        if self.delay > 1: return False
-        if animate:
-            self.delay = BlackHole.delayframes + 1
-            g.invalidate_me(self)
-        return True
-
-    def image(self, af):
-        if self.delay > 0:
-            df = BlackHole.delayframes + 1 - self.delay
-            if df <= 0: df = 1
-            return "black_hole_swallow_"+str(df)
-        return "black_hole_"+str(self.frame+1)
-
 class OneWay(Base):
     """Represents a one-way door."""
     def __init__(self, dx, dy):
@@ -656,6 +618,45 @@ class OneWay(Base):
     def think(self, g, x, y):
         return True
 
+class BlackHole(Thinker):
+    """Represents a black hole."""
+    delayframes = 4
+
+    def __init__(self):
+        Thinker.__init__(self)
+        self.delay = 0
+        self.frame = 0
+
+    def freq(self):
+        return 5
+
+    def think(self, game, x, y):
+        self.frame = self.frame + 1
+        if self.frame == 4: self.frame = 0
+        if self.delay > 0: self.delay = self.delay - 1
+        return True
+
+    def swallow(self, g, animate = True):
+        """Called whenever something might fall in. Returns true if we swallow it, false if we cannot.
+
+        Two parameters: the game object, and a bool (default true) which
+        indicates that the black hole should do its normal reaction cycle
+        (animate and be full (unable to eat) for a few cycles).
+        """
+        if self.delay > 1: return False
+        if animate:
+            self.delay = BlackHole.delayframes + 1
+            g.invalidate_me(self)
+        return True
+
+    def image(self, af):
+        if self.delay > 0:
+            df = BlackHole.delayframes + 1 - self.delay
+            if df <= 0: df = 1
+            return "black_hole_swallow_"+str(df)
+        return "black_hole_"+str(self.frame+1)
+
+
 class Teleporter(Base):
     """Represents a one-way door."""
     def __init__(self, color):
@@ -670,3 +671,29 @@ class Teleporter(Base):
 
     def think(self, g, x, y):
         return True
+
+
+class Switcher(Base):
+    """Represents a one-way door."""
+    def __init__(self, state):
+        Base.__init__(self)
+        assert state in {"used", "unused", "blocked"}
+        self.state = state
+
+    def image(self, af):
+        return "switcher-"+self.state
+
+    def allow_move(self, dx, dy):
+        return self.state != "blocked"
+
+    def freq(self):
+        return 1
+
+    def think(self, g, x, y):
+        return True
+
+    def switch(self):
+        if self.state == "unused" or self.state == "used":
+            self.state = "blocked"
+        else:
+            self.state = "unused"

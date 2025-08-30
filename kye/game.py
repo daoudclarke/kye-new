@@ -92,6 +92,9 @@ class KGame:
         'X': (Teleporter, 'blue'),
         'V': (Teleporter, 'pink'),
         'Q': (Teleporter, 'yellow'),
+        'M': (Switcher, 'unused'),
+        'N': (Switcher, 'used'),
+        'P': (Switcher, 'blocked'),
     }
 
     def __init__(self, f, want_level, movesource, rng):
@@ -135,6 +138,7 @@ class KGame:
         self.diamonds = 0
         self.thekye = None
         self.teleporters = defaultdict(set)
+        self.switchers = {}
 
         for y in xrange(ysize):
             l = f.readline()
@@ -161,6 +165,9 @@ class KGame:
                     # Execute constructor for this object type, and add to the grid
                     cc = apply(ctype[0], ctype[1:])
                     self.add_at(x, y, cc)
+
+                    if ctype[0] == Switcher:
+                        self.switchers[(x, y)] = cc
 
                     # Objects where location matters
                     if isinstance(cc, Shooter) or isinstance(cc, DeletathonShooter):
@@ -386,7 +393,14 @@ class KGame:
             # the one case where two objects can occupy the same square; we
             # "hide" the one-way object in the Kye object, and replace it on
             # the board when the Kye next moves.
-            if isinstance(t, OneWay) and t.allow_move(dx, dy):
+            if (isinstance(t, OneWay) or isinstance(t, Switcher)) and t.allow_move(dx, dy):
+                if isinstance(t, Switcher) and t.state == "unused":
+                    t.state = "used"
+                    for (sx, sy), switcher  in self.switchers.items():
+                        if sx == x+dx and sy == y+dy:
+                            continue
+                        switcher.switch()
+
                 # Remove the one-way and will store in the Kye.
                 self.remove_at(x+dx, y+dy)
                 new_under, t = t, None
